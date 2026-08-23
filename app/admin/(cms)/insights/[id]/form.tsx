@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Insight } from '@/lib/db/schema'
+import { ImageUpload } from '@/app/admin/(cms)/image-upload'
 
 const lbl = 'block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5'
 const inp = 'w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none'
@@ -29,7 +30,7 @@ export default function InsightForm({ item }: { item: Insight | null }) {
       title: fd.get('title'),
       excerpt: fd.get('excerpt'),
       content: fd.get('content') || null,
-      imageUrl: fd.get('imageUrl') || null,
+      imageUrl: imageUrl || null,
       readTime: fd.get('readTime'),
       date: fd.get('date'),
       featured: fd.get('featured') === 'on',
@@ -147,21 +148,7 @@ export default function InsightForm({ item }: { item: Insight | null }) {
           {/* Image */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Cover Image</p>
-
-            <div>
-              <label className={lbl}>Image URL</label>
-              <input
-                name="imageUrl"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://…"
-                className={inp}
-              />
-            </div>
-
-            {imageUrl && (
-              <img src={imageUrl} alt="Preview" className="w-full rounded-lg object-cover aspect-video" onError={(e) => (e.currentTarget.style.display = 'none')} />
-            )}
+            <ImageUpload value={imageUrl} onChange={setImageUrl} aspect="video" label="Cover Image" />
           </div>
 
           {/* Actions */}

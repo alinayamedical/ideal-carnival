@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Faculty } from '@/lib/db/schema'
+import { ImageUpload } from '@/app/admin/(cms)/image-upload'
 
 const lbl = 'block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5'
 const inp = 'w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none'
@@ -24,7 +25,7 @@ export default function FacultyForm({ item }: { item: Faculty | null }) {
       specialisation: (fd.get('specialisation') as string).split('\n').map(s => s.trim()).filter(Boolean),
       bio: fd.get('bio'),
       credentials: (fd.get('credentials') as string).split('\n').map(s => s.trim()).filter(Boolean),
-      imageUrl: fd.get('imageUrl') || null,
+      imageUrl: imageUrl || null,
       sortOrder: Number(fd.get('sortOrder')) || 0,
     }
     const res = await fetch('/api/admin/faculty', {
@@ -91,26 +92,7 @@ export default function FacultyForm({ item }: { item: Faculty | null }) {
         <div className="w-full lg:w-72 shrink-0 space-y-5">
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Photo</p>
-
-            <div>
-              <label className={lbl}>Image URL</label>
-              <input
-                name="imageUrl"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://…"
-                className={inp}
-              />
-            </div>
-
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt="Preview"
-                className="w-full rounded-lg object-cover aspect-square"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            )}
+            <ImageUpload value={imageUrl} onChange={setImageUrl} aspect="square" label="Headshot" />
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
