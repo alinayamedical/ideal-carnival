@@ -18,16 +18,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const guard = await auth(req); if (guard) return guard
-  const body = await req.json()
-  const [row] = await db.insert(insights).values(body).returning()
+  const { slug, category, title, excerpt, content, imageUrl, readTime, date, featured, published } = await req.json()
+  const [row] = await db.insert(insights).values({ slug, category, title, excerpt, content, imageUrl, readTime, date, featured, published }).returning()
   return NextResponse.json(row, { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {
   const guard = await auth(req); if (guard) return guard
   const id = Number(req.nextUrl.searchParams.get('id'))
-  const body = await req.json()
-  const [row] = await db.update(insights).set(body).where(eq(insights.id, id)).returning()
+  const { slug, category, title, excerpt, content, imageUrl, readTime, date, featured, published } = await req.json()
+  const [row] = await db.update(insights).set({ slug, category, title, excerpt, content, imageUrl, readTime, date, featured, published }).where(eq(insights.id, id)).returning()
   return NextResponse.json(row)
 }
 

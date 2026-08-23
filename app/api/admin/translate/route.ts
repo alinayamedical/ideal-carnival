@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/app/admin/auth-guard'
+import { isAdminRequest } from '@/app/admin/auth-guard'
 
 const LANG: Record<string, string> = { en: 'English', ar: 'Arabic' }
 
 export async function POST(req: NextRequest) {
-  await requireAdmin()
+  if (!await isAdminRequest(req.headers.get('cookie'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   const { text, fromLocale, toLocale } = await req.json() as { text: string; fromLocale: string; toLocale: string }
   if (!text?.trim()) return NextResponse.json({ translated: '' })
 

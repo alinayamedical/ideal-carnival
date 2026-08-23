@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, boolean, integer, timestamp, json, primaryKey } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, text, boolean, integer, bigint, timestamp, json, primaryKey } from 'drizzle-orm/pg-core'
 
 export const siteConfig = pgTable('site_config', {
   key: varchar('key', { length: 200 }).notNull(),
@@ -96,6 +96,12 @@ export const customPages = pgTable('custom_pages', {
   navLabelAr: varchar('nav_label_ar', { length: 100 }).notNull().default(''),
   published: boolean('published').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const rateLimits = pgTable('rate_limits', {
+  key: varchar('key', { length: 200 }).primaryKey(),
+  count: integer('count').notNull().default(1),
+  resetAt: bigint('reset_at', { mode: 'number' }).notNull(),
 })
 
 export type Insight = typeof insights.$inferSelect

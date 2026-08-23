@@ -18,8 +18,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ revalidated: true, paths: CONTENT_PATHS, locales: LOCALES })
 }
-
-// Allow GET so client can trigger via browser or webhook URL
-export async function GET(req: NextRequest) {
-  return POST(req)
-}

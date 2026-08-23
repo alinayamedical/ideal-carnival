@@ -1,30 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { makeSessionToken } from '@/app/admin/auth-guard'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 const COOKIE = 'ehp-admin'
 const MAX_AGE = 60 * 60 * 8
 
-// In-memory rate limiter — resets on cold start, sufficient for serverless
-const attempts = new Map<string, { count: number; resetAt: number }>()
-const WINDOW_MS = 15 * 60 * 1000
-const MAX_ATTEMPTS = 10
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = attempts.get(ip)
-  if (!entry || now > entry.resetAt) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return true
-  }
-  if (entry.count >= MAX_ATTEMPTS) return false
-  entry.count++
-  return true
-}
-
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-  if (!checkRateLimit(ip)) {
+  if (!await checkRateLimit(`auth:${ip}`, 10, 15 * 60 * 1000)) {
     return NextResponse.json({ error: 'Too many attempts. Try again in 15 minutes.' }, { status: 429 })
   }
 

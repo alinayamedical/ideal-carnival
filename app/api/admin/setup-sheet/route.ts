@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { initSheet } from '@/lib/google-sheets'
-import { requireAdmin } from '@/app/admin/auth-guard'
+import { isAdminRequest } from '@/app/admin/auth-guard'
 
-export async function POST() {
-  await requireAdmin()
+export async function POST(req: NextRequest) {
+  if (!await isAdminRequest(req.headers.get('cookie'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   try {
     const result = await initSheet()

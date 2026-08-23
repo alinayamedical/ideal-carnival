@@ -18,16 +18,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const guard = await auth(req); if (guard) return guard
-  const body = await req.json()
-  const [row] = await db.insert(programs).values(body).returning()
+  const { slug, title, category, industry, level, duration, format, summary, outcomes, audience, modules, certification, impact, published, sortOrder } = await req.json()
+  const [row] = await db.insert(programs).values({ slug, title, category, industry, level, duration, format, summary, outcomes, audience, modules, certification, impact, published, sortOrder }).returning()
   return NextResponse.json(row, { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {
   const guard = await auth(req); if (guard) return guard
   const id = Number(req.nextUrl.searchParams.get('id'))
-  const body = await req.json()
-  const [row] = await db.update(programs).set(body).where(eq(programs.id, id)).returning()
+  const { slug, title, category, industry, level, duration, format, summary, outcomes, audience, modules, certification, impact, published, sortOrder } = await req.json()
+  const [row] = await db.update(programs).set({ slug, title, category, industry, level, duration, format, summary, outcomes, audience, modules, certification, impact, published, sortOrder }).where(eq(programs.id, id)).returning()
   return NextResponse.json(row)
 }
 
